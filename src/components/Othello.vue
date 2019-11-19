@@ -107,7 +107,7 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0]
       ];
     },
-    initialHistoryBoard: function() {
+    resetHistoryBoard: function() {
       return [
         [
           [0, 0, 0, 0, 0, 0, 0, 0],
@@ -158,7 +158,7 @@ export default {
 
     reset() {
       if (this.currentColor === this.initialColor) {
-        this.historyBoardStatus = this.initialHistoryBoard();
+        this.historyBoardStatus = this.resetHistoryBoard();
         this.judgeBoard();
         this.init();
       }
