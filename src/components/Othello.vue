@@ -22,7 +22,7 @@
         >
           <div
             v-bind:class="{ 'black-stone': grid === 2 , 'white-stone': grid === 1, 
-            'stone': historyBoardStatus.length > 2 && historyBoardStatus[historyBoardStatus.length - 2][i][k] > 0 }"
+            'stone': isStone(i,k) }"
           ></div>
         </td>
       </tr>
@@ -122,6 +122,10 @@ export default {
     this.init();
   },
   methods: {
+    isStone(i, k) {
+      const len = this.historyBoardStatus.length;
+      return len > 2 && this.historyBoardStatus[len - 2][i][k] > 0;
+    },
     setOnClickToGrid(grid, i, k) {
       if (grid > 0) {
         return;
