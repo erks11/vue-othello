@@ -87,6 +87,14 @@ export default {
   },
 
   computed: {
+    initialColor: function() {
+      return 2;
+    }
+  },
+  mounted() {
+    this.init();
+  },
+  methods: {
     initialBoardStatus: function() {
       return [
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -99,14 +107,30 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0]
       ];
     },
-    initialColor: function() {
-      return 2;
-    }
-  },
-  mounted() {
-    this.init();
-  },
-  methods: {
+    initialHistoryBoard: function() {
+      return [
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      ];
+    },
     isStone(i, k) {
       const len = this.historyBoardStatus.length;
       return len > 2 && this.historyBoardStatus[len - 2][i][k] > 0;
@@ -127,24 +151,14 @@ export default {
     },
 
     init() {
-      this.boardStatus = this.initialBoardStatus;
+      this.boardStatus = this.initialBoardStatus();
       this.judgeBoard();
       this.countStone();
     },
 
     reset() {
-      const boardStatus = [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
-      ];
       if (this.currentColor === this.initialColor) {
-        this.boardStatus = boardStatus;
+        this.historyBoardStatus = this.initialHistoryBoard();
         this.judgeBoard();
         this.init();
       }
