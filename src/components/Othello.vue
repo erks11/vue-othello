@@ -12,16 +12,17 @@
         <th>g</th>
         <th>h</th>
       </tr>
-      <tr v-for="(grids, i) in this.boardStatus" :key="i">
+      <tr v-for="(grids, i) in boardStatus" :key="i">
         <th>{{ i + 1 }}</th>
         <td
           v-for="(grid, k) in grids"
-          v-bind:class="{'active': grid === -1}"
+          v-bind:class="{ 'active': grid === -1 }"
           @click="setOnClickToGrid(grid,i,k)"
           :key="k"
         >
           <div
-            v-bind:class="{ 'black-stone': grid === 2 , 'white-stone': grid === 1, 'stone': grid > 0 }"
+            v-bind:class="{ 'black-stone': grid === 2 , 'white-stone': grid === 1, 
+            'stone': historyBoardStatus.length > 2 && historyBoardStatus[historyBoardStatus.length - 2][i][k] > 0 }"
           ></div>
         </td>
       </tr>
@@ -33,16 +34,14 @@
       </tr>
       <tr>
         <td>
-          <div
-            v-bind:class="{'label-you': this.currentColor === 2, 'label-me': this.currentColor === 1}"
-          ></div>
+          <div v-bind:class="{'label-you': currentColor === 2, 'label-me': currentColor === 1}"></div>
         </td>
       </tr>
       <tr>
-        <td>{{ this.stoneCount }}</td>
+        <td>{{ stoneCount }}</td>
       </tr>
       <tr>
-        <td>{{ this.winnerText }}</td>
+        <td>{{ winnerText }}</td>
       </tr>
       <tr>
         <td>
@@ -71,6 +70,28 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0]
+      ],
+      historyBoardStatus: [
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 2, 0, 0, 0],
+          [0, 0, 0, 2, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 2, 0, 0, 0],
+          [0, 0, 0, 2, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
       ],
       winner: 0,
       blackCount: 2,
@@ -115,10 +136,11 @@ export default {
         this.executeCOMTurn(result.activeArr);
       }, 2000);
     },
+
     init() {
       this.boardStatus = this.initialBoardStatus;
-      let res = this.judgeBoard();
-      this.countStone(res.statusArr);
+      this.judgeBoard();
+      this.countStone();
     },
 
     reset() {
@@ -223,7 +245,7 @@ export default {
     },
 
     reverseStone(cood) {
-      let statusArrText = JSON.stringify(this.boardStatus);
+      const statusArrText = JSON.stringify(this.boardStatus);
       let reverseStatusArr = JSON.parse(statusArrText);
       // 置かれた石の周り８方向をみたい
       let resArr = this.judgeGridActive(reverseStatusArr, cood.x, cood.y);
@@ -281,7 +303,6 @@ export default {
       this.boardStatus = judgeStatusArr;
       return {
         isContinue: isContinue,
-        statusArr: judgeStatusArr,
         activeArr: activeArr
       };
     },
@@ -326,7 +347,7 @@ export default {
           let stat = statusArr[new_cood.x][new_cood.y];
           arr.push(stat);
           // 隣が空白か、自分の色だったら抜ける
-          if (stat <= 0 || stat == mycolor) {
+          if (stat <= 0 || stat === mycolor) {
             break;
           }
         }
@@ -337,6 +358,13 @@ export default {
         result = true;
       }
       return { arr: arr, xv: xv, yv: yv, result: result };
+    }
+  },
+  watch: {
+    // boardStatusがかわったら、呼ばれる
+    boardStatus: function(val, oldval) {
+      let statusArrText = JSON.stringify(oldval);
+      this.historyBoardStatus.push(JSON.parse(statusArrText));
     }
   }
 };
