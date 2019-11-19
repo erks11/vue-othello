@@ -226,12 +226,7 @@ export default {
       let statusArrText = JSON.stringify(this.boardStatus);
       let reverseStatusArr = JSON.parse(statusArrText);
       // 置かれた石の周り８方向をみたい
-      let resArr = this.judgeGridActive(
-        reverseStatusArr,
-        reverseStatusArr[cood.x][cood.y],
-        cood.x,
-        cood.y
-      );
+      let resArr = this.judgeGridActive(reverseStatusArr, cood.x, cood.y);
 
       // searchOnewayでarrとxv,yvを受け取り、statusArrを変えてreturnしたい
       resArr.forEach(res => {
@@ -255,7 +250,6 @@ export default {
     judgeBoard() {
       let statusArrText = JSON.stringify(this.boardStatus);
       let judgeStatusArr = JSON.parse(statusArrText);
-      const mycolor = this.currentColor;
       // 白が1 黒が2
       // 64マス全てに対して、置けるかどうか判断したい
       let isContinue = false;
@@ -273,7 +267,7 @@ export default {
 
           // 置けるかどうか判断する
           // 置けるならactiveを表示
-          let resArr = this.judgeGridActive(judgeStatusArr, mycolor, i, k);
+          let resArr = this.judgeGridActive(judgeStatusArr, i, k);
           // resArrのresultに一つでもtrueがあればそのtdをactiveにする
           resArr.forEach(res => {
             if (res.result) {
@@ -293,8 +287,7 @@ export default {
     },
 
     // 周囲8マスをみてる
-    judgeGridActive(statusArr, mycolor, i, k) {
-      mycolor = this.currentColor;
+    judgeGridActive(statusArr, i, k) {
       let res;
       let resArr = [];
       for (let i2 = i - 1; i2 <= i + 1; i2++) {
