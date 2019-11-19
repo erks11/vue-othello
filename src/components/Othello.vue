@@ -27,37 +27,24 @@
         </td>
       </tr>
     </table>
-
-    <table id="battle-status">
-      <tr>
-        <td>○わたし</td>
-      </tr>
-      <tr>
-        <td>
-          <div v-bind:class="{'label-you': currentColor === 2, 'label-me': currentColor === 1}"></div>
-        </td>
-      </tr>
-      <tr>
-        <td>{{ stoneCount }}</td>
-      </tr>
-      <tr>
-        <td>{{ winnerText }}</td>
-      </tr>
-      <tr>
-        <td>
-          <button @click="reset()">reset</button>
-        </td>
-      </tr>
-      <tr>
-        <td>●あなた</td>
-      </tr>
-    </table>
+    <GameStatus
+      :boardStatus="boardStatus"
+      :currentColor="currentColor"
+      :stoneCount="stoneCount"
+      :winnerText="winnerText"
+      @reset="reset"
+    />
   </div>
 </template>
 
 <script>
+import GameStatus from "./GameStatus.vue";
+
 export default {
   name: "Othello",
+  components: {
+    GameStatus
+  },
   data() {
     return {
       currentColor: 2,
@@ -94,9 +81,7 @@ export default {
         ]
       ],
       winner: 0,
-      blackCount: 2,
-      whiteCount: 2,
-      stoneCount: "●:2 ○:2",
+      stoneCount: { black: 2, white: 2 },
       winnerText: ""
     };
   },
@@ -244,7 +229,7 @@ export default {
           }
         }
       }
-      this.stoneCount = "●:" + blackCount + " ○:" + whiteCount;
+      this.stoneCount = { white: whiteCount, black: blackCount };
       return { white: whiteCount, black: blackCount };
     },
 
