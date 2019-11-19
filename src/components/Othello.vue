@@ -98,8 +98,7 @@ export default {
     }
   },
   mounted() {
-    let res = this.judgeBoard(this.initialBoardStatus);
-    this.countStone(res.statusArr);
+    this.init();
   },
   methods: {
     setOnClickToGrid(grid, i, k) {
@@ -110,14 +109,15 @@ export default {
         return;
       }
       this.boardStatus[i][k] = this.currentColor;
-      const result = this.executeOneTurn(this.boardStatus, { x: i, y: k });
+      const result = this.executeOneTurn({ x: i, y: k });
 
       window.setTimeout(() => {
-        this.executeCOMTurn(result.statusArr, result.activeArr);
+        this.executeCOMTurn(result.activeArr);
       }, 2000);
     },
     init() {
-      let res = this.judgeBoard(this.initialBoardStatus);
+      this.boardStatus = this.initialBoardStatus;
+      let res = this.judgeBoard();
       this.countStone(res.statusArr);
     },
 
@@ -133,28 +133,29 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0]
       ];
       if (this.currentColor === this.initialColor) {
-        this.judgeBoard(boardStatus);
-        this.init(this.initialBoardStatus);
+        this.boardStatus = boardStatus;
+        this.judgeBoard();
+        this.init();
       }
     },
 
     // コンピュータの１ターンの処理
-    executeCOMTurn(statusArr, activeArr) {
+    executeCOMTurn(activeArr) {
       // activeである-1の座標が入った配列を作る
       // その配列の中からランダムで、白が置く場所をきめる
       const cood =
         activeArr[Math.floor(Math.random() * (activeArr.length - 1))];
 
       // そこにおく
-      statusArr[cood.x][cood.y] = this.currentColor;
+      this.boardStatus[cood.x][cood.y] = this.currentColor;
       // それを反映させる
-      this.executeOneTurn(statusArr, cood, this.currentColor);
+      this.executeOneTurn(cood);
     },
 
     // オセロ１ターンの処理
-    executeOneTurn(statusArr, cood) {
+    executeOneTurn(cood) {
       // ひっくり返す
-      let reverseStatusArr = this.reverseStone(statusArr, {
+      this.reverseStone({
         x: cood.x,
         y: cood.y
       });
@@ -165,8 +166,8 @@ export default {
         this.currentColor = 1;
       }
       // 次における場所があるかを判断する
-      let result = this.judgeBoard(reverseStatusArr);
-      this.countStone(result.statusArr);
+      let result = this.judgeBoard();
+      this.countStone();
 
       if (result.isContinue) {
         return result;
@@ -183,15 +184,15 @@ export default {
         pass++;
         // passが２回だったらゲーム終了する
         if (pass >= 2) {
-          this.finish(result.statusArr);
+          this.finish();
           break;
         }
-        result = this.judgeBoard(result.statusArr);
+        result = this.judgeBoard();
       }
     },
 
-    finish(statusArr) {
-      const res = this.countStone(statusArr);
+    finish() {
+      const res = this.countStone();
       // 勝敗を決める
       if (res.white === res.black) {
         this.winnerText = "引き分け";
@@ -204,7 +205,8 @@ export default {
     },
 
     // 黒と白の石の数を数える
-    countStone(statusArr) {
+    countStone() {
+      const statusArr = this.boardStatus;
       let whiteCount = 0;
       let blackCount = 0;
       for (let i = 0; i < statusArr.length; i++) {
@@ -220,8 +222,8 @@ export default {
       return { white: whiteCount, black: blackCount };
     },
 
-    reverseStone(statusArr, cood) {
-      let statusArrText = JSON.stringify(statusArr);
+    reverseStone(cood) {
+      let statusArrText = JSON.stringify(this.boardStatus);
       let reverseStatusArr = JSON.parse(statusArrText);
       // 置かれた石の周り８方向をみたい
       let resArr = this.judgeGridActive(
@@ -247,11 +249,11 @@ export default {
           });
         }
       });
-      return reverseStatusArr;
+      this.boardStatus = reverseStatusArr;
     },
 
-    judgeBoard(statusArr) {
-      let statusArrText = JSON.stringify(statusArr);
+    judgeBoard() {
+      let statusArrText = JSON.stringify(this.boardStatus);
       let judgeStatusArr = JSON.parse(statusArrText);
       const mycolor = this.currentColor;
       // 白が1 黒が2
@@ -301,21 +303,15 @@ export default {
           if (i2 === i && k2 === k) {
             continue;
           }
-          res = this.searchOneway(
-            statusArr,
-            { x: i, y: k },
-            i2 - i,
-            k2 - k,
-            mycolor
-          );
+          res = this.searchOneway(statusArr, { x: i, y: k }, i2 - i, k2 - k);
           resArr.push(res);
         }
       }
       return resArr;
     },
 
-    searchOneway(statusArr, cood, xv, yv, mycolor) {
-      mycolor = this.currentColor;
+    searchOneway(statusArr, cood, xv, yv) {
+      const mycolor = this.currentColor;
       let result = false;
       let arr = [];
       const x = cood.x;
