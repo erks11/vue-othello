@@ -2,8 +2,8 @@
   <div id="tables">
     <Board
       :boardStatus="boardStatus"
-      :historyBoardStatus="historyBoardStatus"
       @setOnClickToGrid="setOnClickToGrid"
+      :isResetting="isResetting"
     />
     <GameStatus
       :boardStatus="boardStatus"
@@ -38,31 +38,10 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0]
       ],
-      historyBoardStatus: [
-        [
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 1, 2, 0, 0, 0],
-          [0, 0, 0, 2, 1, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0]
-        ],
-        [
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 1, 2, 0, 0, 0],
-          [0, 0, 0, 2, 1, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-      ],
       winner: 0,
       stoneCount: { black: 2, white: 2 },
-      winnerText: ""
+      winnerText: "",
+      isResetting: false
     };
   },
 
@@ -87,34 +66,7 @@ export default {
         [0, 0, 0, 0, 0, 0, 0, 0]
       ];
     },
-    resetHistoryBoard: function() {
-      return [
-        [
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0]
-        ],
-        [
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-      ];
-    },
-    isStone(i, k) {
-      const len = this.historyBoardStatus.length;
-      return len > 2 && this.historyBoardStatus[len - 2][i][k] > 0;
-    },
+
     setOnClickToGrid(grid, i, k) {
       if (grid > 0) {
         return;
@@ -138,9 +90,23 @@ export default {
 
     reset() {
       if (this.currentColor === this.initialColor) {
-        this.historyBoardStatus = this.resetHistoryBoard();
+        this.isResetting = true;
+        this.boardStatus = [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.judgeBoard();
         this.init();
       }
+      this.$nextTick(() => {
+        this.isResetting = false;
+      });
     },
 
     // コンピュータの１ターンの処理
@@ -196,11 +162,10 @@ export default {
     },
 
     finish() {
-      const res = this.countStone();
       // 勝敗を決める
-      if (res.white === res.black) {
+      if (this.stoneCount.white === this.stoneCount.black) {
         this.winnerText = "引き分け";
-      } else if (res.white > res.black) {
+      } else if (this.stoneCount.white > this.stoneCount.black) {
         this.winnerText = "わたしの勝ち";
       } else {
         this.winnerText = "あなたの勝ち";
@@ -223,7 +188,6 @@ export default {
         }
       }
       this.stoneCount = { white: whiteCount, black: blackCount };
-      return { white: whiteCount, black: blackCount };
     },
 
     reverseStone(cood) {
@@ -340,13 +304,6 @@ export default {
         result = true;
       }
       return { arr: arr, xv: xv, yv: yv, result: result };
-    }
-  },
-  watch: {
-    // boardStatusがかわったら、呼ばれる
-    boardStatus: function(val, oldval) {
-      let statusArrText = JSON.stringify(oldval);
-      this.historyBoardStatus.push(JSON.parse(statusArrText));
     }
   }
 };

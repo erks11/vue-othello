@@ -19,10 +19,12 @@
         @click="$emit('setOnClickToGrid', grid,i,k)"
         :key="k"
       >
-        <transition name="turn-over" mode="out-in">
-          <div v-if="grid === 1" class="white-stone" key="white"></div>
-          <div v-else-if="grid === 2" class="black-stone" key="black"></div>
-        </transition>
+        <div v-if="!isResetting">
+          <transition name="turn-over" mode="out-in">
+            <div v-if="grid === 1" class="white-stone" key="white"></div>
+            <div v-else-if="grid === 2" class="black-stone" key="black"></div>
+          </transition>
+        </div>
       </td>
     </tr>
   </table>
@@ -33,7 +35,7 @@ export default {
   name: "Board",
   props: {
     boardStatus: Array,
-    historyBoardStatus: Array
+    isResetting: Boolean
   }
 };
 </script>
@@ -92,7 +94,8 @@ th {
   transform: rotateY(180deg);
   background-color: #000000;
 }
-
+div.blank {
+}
 div.black-stone {
   width: 20px;
   height: 20px;

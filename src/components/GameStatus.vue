@@ -17,9 +17,6 @@
       </transition>
     </tr>
     <tr>
-      <td>{{ winnerText }}</td>
-    </tr>
-    <tr>
       <td>
         <button @click="$emit('reset')">reset</button>
       </td>
