@@ -1,32 +1,10 @@
 <template>
   <div id="tables">
-    <table id="othello">
-      <tr>
-        <th></th>
-        <th>a</th>
-        <th>b</th>
-        <th>c</th>
-        <th>d</th>
-        <th>e</th>
-        <th>f</th>
-        <th>g</th>
-        <th>h</th>
-      </tr>
-      <tr v-for="(grids, i) in boardStatus" :key="i">
-        <th>{{ i + 1 }}</th>
-        <td
-          v-for="(grid, k) in grids"
-          v-bind:class="{ 'active': grid === -1 }"
-          @click="setOnClickToGrid(grid,i,k)"
-          :key="k"
-        >
-          <div
-            v-bind:class="{ 'black-stone': grid === 2 , 'white-stone': grid === 1, 
-            'stone': isStone(i,k) }"
-          ></div>
-        </td>
-      </tr>
-    </table>
+    <Board
+      :boardStatus="boardStatus"
+      :historyBoardStatus="historyBoardStatus"
+      @setOnClickToGrid="setOnClickToGrid"
+    />
     <GameStatus
       :boardStatus="boardStatus"
       :currentColor="currentColor"
@@ -39,11 +17,13 @@
 
 <script>
 import GameStatus from "./GameStatus.vue";
+import Board from "./Board.vue";
 
 export default {
   name: "Othello",
   components: {
-    GameStatus
+    GameStatus,
+    Board
   },
   data() {
     return {
@@ -159,7 +139,6 @@ export default {
     reset() {
       if (this.currentColor === this.initialColor) {
         this.historyBoardStatus = this.resetHistoryBoard();
-        this.judgeBoard();
         this.init();
       }
     },
@@ -391,63 +370,5 @@ a {
 }
 #tables {
   display: flex;
-}
-#othello {
-  border-collapse: collapse;
-  background-color: #008080;
-  border: 10px solid black;
-  border-top-style: none;
-  border-left-style: none;
-}
-#battle-status {
-  background-color: lavender;
-  width: 200px;
-  height: 240px;
-}
-th {
-  background-color: black;
-  color: blanchedalmond;
-  font-size: xx-small;
-}
-#othello td {
-  border: solid 1px black;
-  width: 24px;
-  height: 24px;
-}
-#othello td.active {
-  background: lightseagreen;
-}
-#othello div {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin: 1px auto;
-}
-div.stone {
-  transition: transform 1s linear 0s, background-color 0s linear 0.5s;
-}
-div.black-stone {
-  transform: rotateY(180deg);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: solid 1px #000000;
-  background-color: #000000;
-  margin: 1px auto;
-}
-div.white-stone {
-  transform: rotateY(360deg);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: solid 1px #000000;
-  background-color: #fff8dc;
-  margin: 1px auto;
-}
-div.label-you::before {
-  content: "あなたの番です";
-}
-div.label-me::before {
-  content: "わたしの番です";
 }
 </style>

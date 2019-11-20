@@ -33,12 +33,6 @@ export default {
     currentColor: Number,
     stoneCount: Object,
     winnerText: String
-  },
-  methods: {
-    isStone(i, k) {
-      const len = this.historyBoardStatus.length;
-      return len > 2 && this.historyBoardStatus[len - 2][i][k] > 0;
-    }
   }
 };
 </script>
