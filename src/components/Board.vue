@@ -34,12 +34,6 @@ export default {
   props: {
     boardStatus: Array,
     historyBoardStatus: Array
-  },
-  methods: {
-    isStone(i, k) {
-      const len = this.historyBoardStatus.length;
-      return len > 2 && this.historyBoardStatus[len - 2][i][k] > 0;
-    }
   }
 };
 </script>
@@ -88,11 +82,15 @@ th {
 }
 .turn-over-enter-active,
 .turn-over-leave-active {
-  transition: opacity 0.5s;
+  transition: transform 1s linear 0s, background-color 0s linear 0.5s;
 }
-.turn-over-enter,
-.turn-over-leave-to {
-  opacity: 0;
+.turn-over-leave-to.black-stone {
+  transform: rotateY(180deg);
+  background-color: #fff8dc;
+}
+.turn-over-leave-to.white-stone {
+  transform: rotateY(180deg);
+  background-color: #000000;
 }
 
 div.black-stone {
