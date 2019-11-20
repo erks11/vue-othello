@@ -19,10 +19,10 @@
         @click="$emit('setOnClickToGrid', grid,i,k)"
         :key="k"
       >
-        <div
-          v-bind:class="{ 'black-stone': grid === 2 , 'white-stone': grid === 1, 
-            'stone': isStone(i,k) }"
-        ></div>
+        <transition name="turn-over" mode="out-in">
+          <div v-if="grid === 1" class="white-stone" key="white"></div>
+          <div v-else-if="grid === 2" class="black-stone" key="black"></div>
+        </transition>
       </td>
     </tr>
   </table>
@@ -86,11 +86,16 @@ th {
   border-radius: 50%;
   margin: 1px auto;
 }
-div.stone {
-  transition: transform 1s linear 0s, background-color 0s linear 0.5s;
+.turn-over-enter-active,
+.turn-over-leave-active {
+  transition: opacity 0.5s;
 }
+.turn-over-enter,
+.turn-over-leave-to {
+  opacity: 0;
+}
+
 div.black-stone {
-  transform: rotateY(180deg);
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -99,7 +104,6 @@ div.black-stone {
   margin: 1px auto;
 }
 div.white-stone {
-  transform: rotateY(360deg);
   width: 20px;
   height: 20px;
   border-radius: 50%;

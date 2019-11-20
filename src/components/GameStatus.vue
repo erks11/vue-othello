@@ -12,6 +12,11 @@
       <td>●:{{ stoneCount.black }} ○:{{ stoneCount.white }}</td>
     </tr>
     <tr>
+      <transition name="bounce">
+        <td v-if="stoneCount.black === 2 && stoneCount.white === 2">スタート</td>
+      </transition>
+    </tr>
+    <tr>
       <td>{{ winnerText }}</td>
     </tr>
     <tr>
@@ -68,5 +73,19 @@ div.label-you::before {
 }
 div.label-me::before {
   content: "わたしの番です";
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
